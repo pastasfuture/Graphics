@@ -99,6 +99,12 @@ namespace UnityEngine.Rendering.HighDefinition
         public LayerMaskParameter layerMask = new LayerMaskParameter(-1);
 
         /// <summary>
+        /// Defines the LOD Bias for sampling all the textures.
+        /// </summary>
+        [Tooltip("Defines the LOD Bias for sampling all the textures. A higher value will increase peformance and make denoising easier but may reduce visual fidelity.")]
+        public ClampedIntParameter lodBias = new ClampedIntParameter(7, 0, 7);
+
+        /// <summary>
         /// Controls the length of GI rays.
         /// </summary>
         public float rayLength

@@ -21,6 +21,7 @@ namespace UnityEditor.Rendering.HighDefinition
         // Ray tracing generic attributes
         SerializedDataParameter m_RayTracing;
         SerializedDataParameter m_LayerMask;
+        SerializedDataParameter m_LodBias;
         SerializedDataParameter m_RayLength;
         SerializedDataParameter m_ClampValue;
         SerializedDataParameter m_Mode;
@@ -54,6 +55,7 @@ namespace UnityEditor.Rendering.HighDefinition
             // Ray Tracing shared parameters
             m_RayTracing = Unpack(o.Find(x => x.rayTracing));
             m_LayerMask = Unpack(o.Find(x => x.layerMask));
+            m_LodBias = Unpack(o.Find(x => x.lodBias));
             m_RayLength = Unpack(o.Find(x => x.rayLength));
             m_ClampValue = Unpack(o.Find(x => x.clampValue));
             m_Mode = Unpack(o.Find(x => x.mode));
@@ -119,6 +121,7 @@ namespace UnityEditor.Rendering.HighDefinition
                     {
                         rayTracingSettingsDisplayed = true;
                         PropertyField(m_LayerMask);
+                        PropertyField(m_LodBias);
                         if (currentAsset.currentPlatformRenderPipelineSettings.supportedRayTracingMode ==
                             RenderPipelineSettings.SupportedRayTracingMode.Both)
                         {

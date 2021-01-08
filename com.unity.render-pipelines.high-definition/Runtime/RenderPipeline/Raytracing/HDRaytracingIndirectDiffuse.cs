@@ -55,6 +55,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
             deferredParameters.halfResolution = !settings.fullResolution;
             deferredParameters.rayCountType = (int)RayCountValues.DiffuseGI_Deferred;
+            deferredParameters.lodBias = settings.lodBias.value;
 
             // Camera data
             deferredParameters.width = hdCamera.actualWidth;
@@ -314,6 +315,7 @@ namespace UnityEngine.Rendering.HighDefinition
             public int sampleCount;
             public float clampValue;
             public int bounceCount;
+            public int lodBias;
 
             // Other parameters
             public RayTracingShader indirectDiffuseRT;
@@ -338,6 +340,7 @@ namespace UnityEngine.Rendering.HighDefinition
             qrtidParams.sampleCount = settings.sampleCount.value;
             qrtidParams.clampValue = settings.clampValue;
             qrtidParams.bounceCount = settings.bounceCount.value;
+            qrtidParams.lodBias = settings.lodBias.value;
 
             // Grab the additional parameters
             qrtidParams.indirectDiffuseRT = m_Asset.renderPipelineRayTracingResources.indirectDiffuseRaytracingRT;
@@ -395,6 +398,7 @@ namespace UnityEngine.Rendering.HighDefinition
             qrtidParameters.shaderVariablesRayTracingCB._RaytracingNumSamples = qrtidParameters.sampleCount;
             qrtidParameters.shaderVariablesRayTracingCB._RaytracingMaxRecursion = qrtidParameters.bounceCount;
             qrtidParameters.shaderVariablesRayTracingCB._RayTracingDiffuseLightingOnly = 1;
+            qrtidParameters.shaderVariablesRayTracingCB._RayTracingLodBias = qrtidParameters.lodBias;
             ConstantBuffer.PushGlobal(cmd, qrtidParameters.shaderVariablesRayTracingCB, HDShaderIDs._ShaderVariablesRaytracing);
 
             // Only use the shader variant that has multi bounce if the bounce count > 1

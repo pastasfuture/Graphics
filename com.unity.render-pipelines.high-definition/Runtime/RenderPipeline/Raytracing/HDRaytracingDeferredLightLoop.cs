@@ -15,6 +15,7 @@ namespace UnityEngine.Rendering.HighDefinition
             public bool diffuseLightingOnly;
             public bool halfResolution;
             public int rayCountType;
+            public float lodBias;
 
             // Camera data
             public int width;
@@ -133,7 +134,7 @@ namespace UnityEngine.Rendering.HighDefinition
             cmd.DispatchCompute(config.rayBinningCS, currentKernel, numTilesRayBinX, numTilesRayBinY, config.viewCount);
         }
 
-        static void RenderRaytracingDeferredLighting(CommandBuffer cmd, in DeferredLightingRTParameters parameters, in DeferredLightingRTResources buffers)
+        static void RenderRaytracingDeferredLighting(CommandBuffer cmd, DeferredLightingRTParameters parameters, in DeferredLightingRTResources buffers)
         {
             // Compute the input texture dimension
             int texWidth = parameters.width;
@@ -150,6 +151,7 @@ namespace UnityEngine.Rendering.HighDefinition
             }
 
             // Inject the global parameters
+            parameters.raytracingCB._RayTracingLodBias = parameters.lodBias;
             ConstantBuffer.PushGlobal(cmd, parameters.raytracingCB, HDShaderIDs._ShaderVariablesRaytracing);
 
             // Define the shader pass to use for the reflection pass
