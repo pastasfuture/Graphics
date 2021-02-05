@@ -121,7 +121,7 @@ namespace UnityEngine.Rendering.HighDefinition
         /// <summary>
         /// Defines the LOD Bias for sampling all the textures.
         /// </summary>
-        public ClampedIntParameter lodBias = new ClampedIntParameter(1, 0, 7);
+        public ClampedIntParameter textureLodBias = new ClampedIntParameter(1, 0, 7);
 
         /// <summary>
         /// Controls the length of reflection rays.

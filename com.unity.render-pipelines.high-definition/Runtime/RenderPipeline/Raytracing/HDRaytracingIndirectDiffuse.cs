@@ -55,7 +55,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
             deferredParameters.halfResolution = !settings.fullResolution;
             deferredParameters.rayCountType = (int)RayCountValues.DiffuseGI_Deferred;
-            deferredParameters.lodBias = settings.lodBias.value;
+            deferredParameters.lodBias = settings.textureLodBias.value;
 
             // Camera data
             deferredParameters.width = hdCamera.actualWidth;
@@ -340,7 +340,7 @@ namespace UnityEngine.Rendering.HighDefinition
             qrtidParams.sampleCount = settings.sampleCount.value;
             qrtidParams.clampValue = settings.clampValue;
             qrtidParams.bounceCount = settings.bounceCount.value;
-            qrtidParams.lodBias = settings.lodBias.value;
+            qrtidParams.lodBias = settings.textureLodBias.value;
 
             // Grab the additional parameters
             qrtidParams.indirectDiffuseRT = m_Asset.renderPipelineRayTracingResources.indirectDiffuseRaytracingRT;

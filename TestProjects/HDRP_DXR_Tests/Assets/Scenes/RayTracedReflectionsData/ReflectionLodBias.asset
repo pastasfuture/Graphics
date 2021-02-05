@@ -438,7 +438,7 @@ MonoBehaviour:
     m_Value:
       serializedVersion: 2
       m_Bits: 4294967295
-  lodBias:
+  textureLodBias:
     m_OverrideState: 1
     m_Value: 7
     min: 0

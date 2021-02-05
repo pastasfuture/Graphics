@@ -161,7 +161,7 @@ namespace UnityEngine.Rendering.HighDefinition
             deferredParameters.diffuseLightingOnly = false;
             deferredParameters.halfResolution = !settings.fullResolution;
             deferredParameters.rayCountType = (int)RayCountValues.ReflectionDeferred;
-            deferredParameters.lodBias = settings.lodBias.value;
+            deferredParameters.lodBias = settings.textureLodBias.value;
 
             // Camera data
             deferredParameters.width = hdCamera.actualWidth;
@@ -370,7 +370,7 @@ namespace UnityEngine.Rendering.HighDefinition
             rtrQualityRenderingParameters.transparent = transparent;
             rtrQualityRenderingParameters.minSmoothness = settings.minSmoothness;
             rtrQualityRenderingParameters.smoothnessFadeStart = settings.smoothnessFadeStart;
-            rtrQualityRenderingParameters.lodBias = settings.lodBias.value;
+            rtrQualityRenderingParameters.lodBias = settings.textureLodBias.value;
 
             // Other parameters
             rtrQualityRenderingParameters.accelerationStructure = RequestAccelerationStructure();
