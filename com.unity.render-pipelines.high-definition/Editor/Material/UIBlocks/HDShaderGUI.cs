@@ -23,8 +23,6 @@ namespace UnityEditor.Rendering.HighDefinition
     /// </summary>
     public abstract class HDShaderGUI : ShaderGUI
     {
-        internal protected bool m_FirstFrame = true;
-
         // The following set of functions are call by the ShaderGraph
         // It will allow to display our common parameters + setup keyword correctly for them
 
@@ -54,16 +52,9 @@ namespace UnityEditor.Rendering.HighDefinition
         /// <param name="materials">The materials to perform the setup on.</param>
         protected void ApplyKeywordsAndPassesIfNeeded(bool changed, Material[] materials)
         {
-            // !!! HACK !!!
-            // When a user creates a new Material from the contextual menu, the material is created from the editor code and the appropriate shader is applied to it.
-            // This means that we never setup keywords and passes for a newly created material. The material is then in an invalid state.
-            // To work around this, as the material is automatically selected when created, we force an update of the keyword at the first "frame" of the editor.
-
             // Apply material keywords and pass:
-            if (changed || m_FirstFrame)
+            if (changed)
             {
-                m_FirstFrame = false;
-
                 foreach (var material in materials)
                     SetupMaterialKeywordsAndPass(material);
             }

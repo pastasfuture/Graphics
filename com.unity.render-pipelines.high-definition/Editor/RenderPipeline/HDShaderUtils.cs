@@ -102,7 +102,6 @@ namespace UnityEditor.Rendering.HighDefinition
                 // We need to reapply ToggleOff/Toggle keyword after reset via ApplyMaterialPropertyDrawers
                 MaterialEditor.ApplyMaterialPropertyDrawers(material);
                 resetter(material);
-                EditorUtility.SetDirty(material);
                 return true;
             }
 
