@@ -6,7 +6,7 @@
         "com.unity.render-pipelines.universal": "file:../../../com.unity.render-pipelines.universal",
         "com.unity.shadergraph": "file:../../../com.unity.shadergraph",
         "com.unity.test-framework": "1.1.14",
-        "com.unity.test-framework.build": "ssh://git@github.cds.internal.unity3d.com:theo-penavaire/com.unity.test-framework.build.git#hotfix/api-updater",
+        "com.unity.test-framework.build": "file:../../../com.unity.test-framework.build",
         "com.unity.test-framework.utp-reporter": "1.0.2-preview",
         "com.unity.testframework.graphics": "7.8.2-preview",
         "com.unity.ugui": "1.0.0",
