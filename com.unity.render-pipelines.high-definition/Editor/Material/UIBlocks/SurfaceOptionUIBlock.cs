@@ -103,6 +103,7 @@ namespace UnityEditor.Rendering.HighDefinition
             // Lit properties
             public static GUIContent doubleSidedNormalModeText = new GUIContent("Normal Mode", "Specifies the method HDRP uses to modify the normal base.\nMirror: Mirrors the normals with the vertex normal plane.\nFlip: Flips the normal.");
             public static GUIContent depthOffsetEnableText = new GUIContent("Depth Offset", "When enabled, HDRP uses the Height Map to calculate the depth offset for this Material.");
+            public static GUIContent conservativeDepthOffsetEnableText = new GUIContent("Conservative", "When enabled, only positive depth offsets will be applied in order to take advantage of the early depth test mechanic.");
 
             // Displacement mapping (POM, tessellation, per vertex)
             //public static GUIContent enablePerPixelDisplacementText = new GUIContent("Per Pixel Displacement", "");
@@ -215,6 +216,7 @@ namespace UnityEditor.Rendering.HighDefinition
         const string kDisplacementLockTilingScale = "_DisplacementLockTilingScale";
 
         MaterialProperty depthOffsetEnable = null;
+        MaterialProperty conservativeDepthOffsetEnable = null;
 
         MaterialProperty tessellationMode = null;
         const string kTessellationMode = "_TessellationMode";
@@ -359,6 +361,7 @@ namespace UnityEditor.Rendering.HighDefinition
             if ((m_Features & Features.DoubleSidedNormalMode) != 0)
                 doubleSidedNormalMode = FindProperty(kDoubleSidedNormalMode);
             depthOffsetEnable = FindProperty(kDepthOffsetEnable);
+            conservativeDepthOffsetEnable = FindProperty(kConservativeDepthOffsetEnable);
 
             // MaterialID
             materialID = FindProperty(kMaterialID);
@@ -840,7 +843,15 @@ namespace UnityEditor.Rendering.HighDefinition
             {
                 // We only display Depth offset option when it's enabled in the ShaderGraph, otherwise the default value for depth offset is 0 does not make sense.
                 if (!AreMaterialsShaderGraphs() || (AreMaterialsShaderGraphs() && GetShaderDefaultFloatValue(kDepthOffsetEnable) > 0.0f == true))
+                {
                     materialEditor.ShaderProperty(depthOffsetEnable, Styles.depthOffsetEnableText);
+                    if (conservativeDepthOffsetEnable != null)
+                    {
+                        EditorGUI.indentLevel++;
+                        materialEditor.ShaderProperty(conservativeDepthOffsetEnable, Styles.conservativeDepthOffsetEnableText);
+                        EditorGUI.indentLevel--;
+                    }
+                }
             }
             else if (displacementMode != null)
             {
