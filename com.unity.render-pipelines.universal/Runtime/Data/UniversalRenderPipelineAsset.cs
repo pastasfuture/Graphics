@@ -85,10 +85,8 @@ namespace UnityEngine.Rendering.Universal
     [MovedFrom("UnityEngine.Rendering.LWRP")] public enum RendererType
     {
         Custom,
-        UniversalRenderer,
+        ForwardRenderer,
         _2DRenderer,
-        [Obsolete("ForwardRenderer has been renamed (UnityUpgradable) -> UniversalRenderer", true)]
-        ForwardRenderer = UniversalRenderer,
     }
 
     public enum ColorGradingMode
@@ -108,7 +106,7 @@ namespace UnityEngine.Rendering.Universal
         [SerializeField] int k_AssetPreviousVersion = 8;
 
         // Deprecated settings for upgrading sakes
-        [SerializeField] RendererType m_RendererType = RendererType.UniversalRenderer;
+        [SerializeField] RendererType m_RendererType = RendererType.ForwardRenderer;
         [EditorBrowsable(EditorBrowsableState.Never)]
         [SerializeField] internal ScriptableRendererData m_RendererData = null;
 
@@ -200,7 +198,7 @@ namespace UnityEngine.Rendering.Universal
             if (rendererData != null)
                 instance.m_RendererDataList[0] = rendererData;
             else
-                instance.m_RendererDataList[0] = CreateInstance<UniversalRendererData>();
+                instance.m_RendererDataList[0] = CreateInstance<ForwardRendererData>();
 
             // Initialize default Renderer
             instance.m_EditorResourcesAsset = instance.editorResources;
@@ -214,11 +212,11 @@ namespace UnityEngine.Rendering.Universal
             public override void Action(int instanceId, string pathName, string resourceFile)
             {
                 //Create asset
-                AssetDatabase.CreateAsset(Create(CreateRendererAsset(pathName, RendererType.UniversalRenderer)), pathName);
+                AssetDatabase.CreateAsset(Create(CreateRendererAsset(pathName, RendererType.ForwardRenderer)), pathName);
             }
         }
 
-        [MenuItem("Assets/Create/Rendering/URP Asset (with Universal Renderer)", priority = CoreUtils.Sections.section2 + CoreUtils.Priorities.assetsCreateRenderingMenuPriority)]
+        [MenuItem("Assets/Create/Rendering/URP Asset (with Forward Renderer)", priority = CoreUtils.Sections.section2 + CoreUtils.Priorities.assetsCreateRenderingMenuPriority)]
         static void CreateUniversalPipeline()
         {
             ProjectWindowUtil.StartNameEditingIfProjectWindowExists(0, CreateInstance<CreateUniversalPipelineAsset>(),
@@ -242,14 +240,14 @@ namespace UnityEngine.Rendering.Universal
         {
             switch (type)
             {
-                case RendererType.UniversalRenderer:
-                    return CreateInstance<UniversalRendererData>();
+                case RendererType.ForwardRenderer:
+                    return CreateInstance<ForwardRendererData>();
                 // 2D renderer is experimental
                 case RendererType._2DRenderer:
                     return CreateInstance<Experimental.Rendering.Universal.Renderer2DData>();
-                // Universal Renderer is the fallback renderer that works on all platforms
+                // Forward Renderer is the fallback renderer that works on all platforms
                 default:
-                    return CreateInstance<UniversalRendererData>();
+                    return CreateInstance<ForwardRendererData>();
             }
         }
 
@@ -277,12 +275,12 @@ namespace UnityEngine.Rendering.Universal
         }
 #endif
 
-        public ScriptableRendererData LoadBuiltinRendererData(RendererType type = RendererType.UniversalRenderer)
+        public ScriptableRendererData LoadBuiltinRendererData(RendererType type = RendererType.ForwardRenderer)
         {
 #if UNITY_EDITOR
             EditorUtility.SetDirty(this);
             return m_RendererDataList[0] =
-                CreateRendererAsset("Assets/UniversalRenderer.asset", type, false);
+                CreateRendererAsset("Assets/ForwardRenderer.asset", type, false);
 #else
             m_RendererDataList[0] = null;
             return m_RendererDataList[0];
@@ -947,9 +945,9 @@ namespace UnityEngine.Rendering.Universal
         {
             if (asset.k_AssetPreviousVersion < 5)
             {
-                if (asset.m_RendererType == RendererType.UniversalRenderer)
+                if (asset.m_RendererType == RendererType.ForwardRenderer)
                 {
-                    var data = AssetDatabase.LoadAssetAtPath<UniversalRendererData>("Assets/UniversalRenderer.asset");
+                    var data = AssetDatabase.LoadAssetAtPath<ForwardRendererData>("Assets/ForwardRenderer.asset");
                     if (data)
                     {
                         asset.m_RendererDataList[0] = data;
