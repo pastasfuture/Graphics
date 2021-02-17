@@ -1,4 +1,5 @@
 {
+    "registry": "https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-candidates",
     "dependencies": {
         "com.unity.render-pipelines.core": "file:../../../com.unity.render-pipelines.core",
         "com.unity.render-pipelines.high-definition": "file:../../../com.unity.render-pipelines.high-definition",
