@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Rendering.HighDefinition;
-using System.Linq;
-using UnityEditor;
 
 // Include material common properties names
+
+using UnityEngine;
 using static UnityEngine.Rendering.HighDefinition.HDMaterialProperties;
 
 namespace UnityEditor.Rendering.HighDefinition
@@ -17,12 +13,12 @@ namespace UnityEditor.Rendering.HighDefinition
     {
         internal class Styles
         {
-            public static readonly string[] headers =
+            public static readonly GUIContent[] headers =
             {
-                "Main layer",
-                "Layer 1",
-                "Layer 2",
-                "Layer 3",
+                EditorGUIUtility.TrTextContent("Main layer"),
+                EditorGUIUtility.TrTextContent("Layer 1"),
+                EditorGUIUtility.TrTextContent("Layer 2"),
+                EditorGUIUtility.TrTextContent("Layer 3"),
             };
 
             public static readonly ExpandableBit[] layerExpandableBits =

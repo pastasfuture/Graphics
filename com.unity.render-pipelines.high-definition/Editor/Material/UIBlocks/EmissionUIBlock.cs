@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
-using UnityEngine.Rendering;
-using System.Reflection;
-using System.Linq.Expressions;
-using System.Linq;
 
 namespace UnityEditor.Rendering.HighDefinition
 {
@@ -40,8 +38,7 @@ namespace UnityEditor.Rendering.HighDefinition
 
         internal class Styles
         {
-            public const string header = "Emission Inputs";
-
+            public static GUIContent header { get; } = EditorGUIUtility.TrTextContent("Emission Inputs");
             public static GUIContent emissiveText = new GUIContent("Emissive Color", "Emissive Color (RGB).");
 
             public static GUIContent albedoAffectEmissiveText = new GUIContent("Emission multiply with Base", "Specifies whether or not the emission color is multiplied by the albedo.");
@@ -78,7 +75,6 @@ namespace UnityEditor.Rendering.HighDefinition
         MaterialProperty albedoAffectEmissive = null;
         const string kAlbedoAffectEmissive = "_AlbedoAffectEmissive";
 
-        ExpandableBit  m_ExpandableBit;
         Features    m_Features;
 
         /// <summary>
@@ -87,8 +83,8 @@ namespace UnityEditor.Rendering.HighDefinition
         /// <param name="expandableBit">Bit index used to store the foldout state.</param>
         /// <param name="features">Features of the block.</param>
         public EmissionUIBlock(ExpandableBit expandableBit, Features features = Features.All)
+            : base(expandableBit, Styles.header)
         {
-            m_ExpandableBit = expandableBit;
             m_Features = features;
         }
 
@@ -113,38 +109,7 @@ namespace UnityEditor.Rendering.HighDefinition
         /// <summary>
         /// Renders the properties in the block.
         /// </summary>
-        public override void OnGUI()
-        {
-            using (var header = new MaterialHeaderScope(Styles.header, (uint)m_ExpandableBit, materialEditor))
-            {
-                if (header.expanded)
-                    DrawEmissionGUI();
-            }
-        }
-
-        void UpdateEmissiveColorFromIntensityAndEmissiveColorLDR()
-        {
-            materialEditor.serializedObject.ApplyModifiedProperties();
-            foreach (Material target in materials)
-            {
-                target.UpdateEmissiveColorFromIntensityAndEmissiveColorLDR();
-            }
-            materialEditor.serializedObject.Update();
-        }
-
-        void UpdateEmissionUnit(float newUnitFloat)
-        {
-            foreach (Material target in materials)
-            {
-                if (target.HasProperty(kEmissiveIntensityUnit) && target.HasProperty(kEmissiveIntensity))
-                {
-                    target.SetFloat(kEmissiveIntensityUnit, newUnitFloat);
-                }
-            }
-            materialEditor.serializedObject.Update();
-        }
-
-        void DrawEmissionGUI()
+        protected override void OnGUIInternal()
         {
             EditorGUI.BeginChangeCheck();
             materialEditor.ShaderProperty(useEmissiveIntensity, Styles.useEmissiveIntensityText);
@@ -244,6 +209,28 @@ namespace UnityEditor.Rendering.HighDefinition
                 // Change the GI emission flag and fix it up with emissive as black if necessary.
                 materialEditor.LightmapEmissionFlagsProperty(MaterialEditor.kMiniTextureFieldLabelIndentLevel, true);
             }
+        }
+
+        void UpdateEmissiveColorFromIntensityAndEmissiveColorLDR()
+        {
+            materialEditor.serializedObject.ApplyModifiedProperties();
+            foreach (Material target in materials)
+            {
+                target.UpdateEmissiveColorFromIntensityAndEmissiveColorLDR();
+            }
+            materialEditor.serializedObject.Update();
+        }
+
+        void UpdateEmissionUnit(float newUnitFloat)
+        {
+            foreach (Material target in materials)
+            {
+                if (target.HasProperty(kEmissiveIntensityUnit) && target.HasProperty(kEmissiveIntensity))
+                {
+                    target.SetFloat(kEmissiveIntensityUnit, newUnitFloat);
+                }
+            }
+            materialEditor.serializedObject.Update();
         }
 
         void DoEmissiveTextureProperty(MaterialProperty color)

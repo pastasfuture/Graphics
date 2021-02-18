@@ -1,8 +1,6 @@
 using System;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Rendering.HighDefinition;
-using UnityEditor.Rendering;
 
 namespace UnityEditor.Rendering.HighDefinition
 {
@@ -11,6 +9,9 @@ namespace UnityEditor.Rendering.HighDefinition
     /// </summary>
     public abstract class MaterialUIBlock
     {
+        public ExpandableBit expandableBit { get; }
+        public GUIContent header { get; }
+
         /// <summary>The current material editor.</summary>
         protected MaterialEditor        materialEditor;
         /// <summary>The list of selected materials to edit.</summary>
@@ -133,17 +134,26 @@ namespace UnityEditor.Rendering.HighDefinition
             User19 = 1 << 30,
         }
 
-        internal void         Initialize(MaterialEditor materialEditor, MaterialProperty[] properties, MaterialUIBlockList parent)
+        internal MaterialUIBlock()
+        {
+        }
+
+        internal MaterialUIBlock(ExpandableBit expandableBit, GUIContent header)
+        {
+            this.expandableBit = expandableBit;
+            this.header = header;
+        }
+
+        internal void Initialize(MaterialEditor materialEditor, MaterialProperty[] properties, MaterialUIBlockList parent)
         {
             this.materialEditor = materialEditor;
             this.parent = parent;
-            materials = materialEditor.targets.Select(target => target as Material).ToArray();
-
-            // We should always register the key used to keep collapsable state
-            materialEditor.InitExpandableState();
+            materials = materialEditor.targets
+                .Select(target => target as Material)
+                .ToArray();
         }
 
-        internal void         UpdateMaterialProperties(MaterialProperty[] properties)
+        internal void UpdateMaterialProperties(MaterialProperty[] properties)
         {
             this.properties = properties;
             LoadMaterialProperties();
@@ -201,6 +211,39 @@ namespace UnityEditor.Rendering.HighDefinition
         /// <summary>
         /// Renders the properties in the block.
         /// </summary>
-        public abstract void OnGUI();
+        public virtual void OnGUI()
+        {
+            if (!showSection)
+                return;
+
+            using var scope = new MaterialHeaderScope(header, (uint)expandableBit, materialEditor, subHeader: isSubHeader, colorDot: dotColor);
+            if (scope.expanded)
+            {
+                OnGUIInternal();
+            }
+        }
+
+        /// <summary>
+        /// Property that specifies if the scope is a subheader
+        /// </summary>
+        protected virtual bool isSubHeader => false;
+
+        /// <summary>
+        /// Dot color for material scope
+        /// </summary>
+        protected virtual Color dotColor => default;
+
+        /// <summary>
+        /// If the section should be shown
+        /// </summary>
+        protected virtual bool showSection => true;
+
+        /// <summary>
+        /// GUI callback when the header is open
+        /// </summary>
+        protected virtual void OnGUIInternal()
+        {
+            throw new NotImplementedException("You must implement OnGUIInternal if you are not overriding OnGUI");
+        }
     }
 }

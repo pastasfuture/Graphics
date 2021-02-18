@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering.HighDefinition;
-using System.Linq;
-using UnityEditor;
 
 // Include material common properties names
 using static UnityEngine.Rendering.HighDefinition.HDMaterialProperties;
@@ -17,7 +12,7 @@ namespace UnityEditor.Rendering.HighDefinition
     {
         internal class Styles
         {
-            public const string header = "Layer List";
+            public static GUIContent header { get; } = EditorGUIUtility.TrTextContent("Layering List");
             public static readonly GUIContent layerNameHeader = EditorGUIUtility.TrTextContent("Layer name");
             public static readonly GUIContent layerMaterialHeader = EditorGUIUtility.TrTextContent("Layer Material");
             public static readonly GUIContent uvHeader = EditorGUIUtility.TrTextContent("UV", "Also reset UV.");
@@ -25,50 +20,28 @@ namespace UnityEditor.Rendering.HighDefinition
 
             public static readonly GUIContent[] layerLabels =
             {
-                new GUIContent("Main layer"),
-                new GUIContent("Layer 1"),
-                new GUIContent("Layer 2"),
-                new GUIContent("Layer 3"),
+                 EditorGUIUtility.TrTextContent("Main layer"),
+                 EditorGUIUtility.TrTextContent("Layer 1"),
+                 EditorGUIUtility.TrTextContent("Layer 2"),
+                 EditorGUIUtility.TrTextContent("Layer 3"),
             };
         }
 
         MaterialProperty layerCount = null;
-
-        ExpandableBit      m_ExpandableBit;
+        
         bool[]          m_WithUV = new bool[kMaxLayerCount];
         Material[]      m_MaterialLayers = new Material[kMaxLayerCount];
         AssetImporter   m_MaterialImporter;
 
-        int numLayer
-        {
-            get { return (int)layerCount.floatValue; }
-            set
-            {
-                layerCount.floatValue = (float)value;
-                UpdateEditorExpended(value);
-            }
-        }
-
-        void UpdateEditorExpended(int layerNumber)
-        {
-            if (layerNumber == 4)
-            {
-                materialEditor.SetExpandedAreas((uint)ExpandableBit.ShowLayer3, true);
-            }
-            if (layerNumber >= 3)
-            {
-                materialEditor.SetExpandedAreas((uint)ExpandableBit.ShowLayer2, true);
-            }
-            materialEditor.SetExpandedAreas((uint)ExpandableBit.ShowLayer1, true);
-        }
+        int numLayer => (int)layerCount.floatValue;
 
         /// <summary>
         /// Constructs a LayerListUIBlock based on the parameters.
         /// </summary>
         /// <param name="expandableBit">Bit index used to store the state of the foldout</param>
         public LayerListUIBlock(ExpandableBit expandableBit)
+            : base(expandableBit, Styles.header)
         {
-            m_ExpandableBit = expandableBit;
         }
 
         /// <summary>
@@ -91,18 +64,7 @@ namespace UnityEditor.Rendering.HighDefinition
         /// <summary>
         /// Renders the properties in the block.
         /// </summary>
-        public override void OnGUI()
-        {
-            using (var header = new MaterialHeaderScope(Styles.header, (uint)m_ExpandableBit, materialEditor))
-            {
-                if (header.expanded)
-                {
-                    DrawLayerListGUI();
-                }
-            }
-        }
-
-        void DrawLayerListGUI()
+        protected override void OnGUIInternal()
         {
             bool    layersChanged = false;
             var     oldLabelWidth = EditorGUIUtility.labelWidth;

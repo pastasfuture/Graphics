@@ -17,6 +17,7 @@ namespace UnityEditor.Rendering.HighDefinition
     {
         internal static class Styles
         {
+            public static GUIContent header { get; } = EditorGUIUtility.TrTextContent("Refraction Model");
             public static string refractionModelText = "Refraction Model";
             public static GUIContent refractionIorText = new GUIContent("Index Of Refraction", "Controls the index of refraction for this Material.");
             public static GUIContent refractionThicknessText = new GUIContent("Thickness", "Controls the thickness for rough refraction.");
@@ -77,9 +78,9 @@ namespace UnityEditor.Rendering.HighDefinition
         /// <summary>
         /// Renders the properties in the block.
         /// </summary>
-        public override void OnGUI()
+        protected override void OnGUIInternal()
         {
-            if (refractionModel != null)
+            using (new EditorGUI.DisabledScope(refractionModel != null))
             {
                 materialEditor.ShaderProperty(refractionModel, Styles.refractionModelText);
                 var mode = (ScreenSpaceRefraction.RefractionModel)refractionModel.floatValue;
