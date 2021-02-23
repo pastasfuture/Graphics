@@ -46,10 +46,13 @@ class ForwardToUniversalRendererPostprocessor : AssetPostprocessor
             SerializedObject soAsset = new SerializedObject(allRPassets[i]);
             SerializedProperty scriptPropertyAsset = soAsset.FindProperty("m_RequireDepthTexture");
             soAsset.Update();
-            bool tmp = scriptPropertyAsset.boolValue;
-            scriptPropertyAsset.boolValue = !scriptPropertyAsset.boolValue; //make the changes
-            soAsset.ApplyModifiedProperties();
-            scriptPropertyAsset.boolValue = tmp; //revert the changes
+            if (scriptPropertyAsset != null)
+            {
+                bool tmp = scriptPropertyAsset.boolValue;
+                scriptPropertyAsset.boolValue = !scriptPropertyAsset.boolValue; //make the changes
+                soAsset.ApplyModifiedProperties();
+                scriptPropertyAsset.boolValue = tmp; //revert the changes
+            }
             soAsset.ApplyModifiedProperties();
         }
     }
