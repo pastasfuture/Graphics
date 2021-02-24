@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 
+# ================================================================================
+# Script for the workaround regarding the local config package with collaborate
+# ================================================================================
+#
+# See the Known Issues page in the wiki for further information
+
 import os, sys, pathlib, argparse, shutil, traceback
 from pathlib import Path
 
@@ -136,6 +142,8 @@ def create_package_manifest_if_required(arguments: Arguments):
         file.write(content)
         file.close()
 
+# -----------------
+# Main execution
 # -----------------
 try:
     args = Arguments()
