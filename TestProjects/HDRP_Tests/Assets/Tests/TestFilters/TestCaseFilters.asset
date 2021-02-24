@@ -60,15 +60,6 @@ MonoBehaviour:
     Reason: weird artifact
   - FilteredScene: {fileID: 0}
     FilteredScenes:
-    - {fileID: 102900000, guid: 439ce9822b2644f4ea064429ed2c5955, type: 3}
-    ColorSpace: 1
-    BuildPlatform: -2
-    GraphicsDevice: 16
-    XrSdk:
-    StereoModes: 0
-    Reason: Disable this test as we disable the feature for Yamto on Mac
-  - FilteredScene: {fileID: 0}
-    FilteredScenes:
     - {fileID: 102900000, guid: ac9787fadf0b4ed4391bee6ba1d8e213, type: 3}
     ColorSpace: 1
     BuildPlatform: -2
