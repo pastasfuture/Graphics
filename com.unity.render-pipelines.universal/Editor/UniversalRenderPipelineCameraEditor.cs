@@ -406,7 +406,7 @@ namespace UnityEditor.Rendering.Universal
 
         void DrawCommonSettings()
         {
-            m_CommonCameraSettingsFoldout.value = EditorGUILayout.BeginFoldoutHeaderGroup(m_CommonCameraSettingsFoldout.value, URPCameraUI.commonCameraSettingsText);
+            m_CommonCameraSettingsFoldout.value = EditorGUILayout.BeginFoldoutHeaderGroup(m_CommonCameraSettingsFoldout.value, URPCameraUI.Styles.commonCameraSettingsText);
             if (m_CommonCameraSettingsFoldout.value)
             {
                 settings.DrawProjection();
@@ -419,7 +419,7 @@ namespace UnityEditor.Rendering.Universal
 
         void DrawStackSettings()
         {
-            m_StackSettingsFoldout.value = EditorGUILayout.BeginFoldoutHeaderGroup(m_StackSettingsFoldout.value, URPCameraUI.stackSettingsText);
+            m_StackSettingsFoldout.value = EditorGUILayout.BeginFoldoutHeaderGroup(m_StackSettingsFoldout.value, URPCameraUI.Styles.stackSettingsText);
             if (m_AdditionalCameraDataCameras.hasMultipleDifferentValues)
             {
                 EditorGUILayout.HelpBox("Cannot multi edit stack of multiple cameras.", MessageType.Info);
@@ -466,7 +466,7 @@ namespace UnityEditor.Rendering.Universal
 
         void DrawEnvironmentSettings(CameraRenderType camType)
         {
-            m_EnvironmentSettingsFoldout.value = EditorGUILayout.BeginFoldoutHeaderGroup(m_EnvironmentSettingsFoldout.value, URPCameraUI.environmentSettingsText);
+            m_EnvironmentSettingsFoldout.value = EditorGUILayout.BeginFoldoutHeaderGroup(m_EnvironmentSettingsFoldout.value, URPCameraUI.Styles.environmentSettingsText);
             if (m_EnvironmentSettingsFoldout.value)
             {
                 if (camType == CameraRenderType.Base)
@@ -495,7 +495,7 @@ namespace UnityEditor.Rendering.Universal
 
         void DrawRenderingSettings(CameraRenderType camType, UniversalRenderPipelineAsset rpAsset)
         {
-            m_RenderingSettingsFoldout.value = EditorGUILayout.BeginFoldoutHeaderGroup(m_RenderingSettingsFoldout.value, URPCameraUI.renderingSettingsText);
+            m_RenderingSettingsFoldout.value = EditorGUILayout.BeginFoldoutHeaderGroup(m_RenderingSettingsFoldout.value, URPCameraUI.Styles.renderingSettingsText);
             if (m_RenderingSettingsFoldout.value)
             {
                 DrawRenderer(rpAsset);
@@ -507,7 +507,7 @@ namespace UnityEditor.Rendering.Universal
                 else if (camType == CameraRenderType.Overlay)
                 {
                     DrawPostProcessingOverlay(rpAsset);
-                    EditorGUILayout.PropertyField(m_AdditionalCameraClearDepth, URPCameraUI.clearDepth);
+                    EditorGUILayout.PropertyField(m_AdditionalCameraClearDepth, URPCameraUI.Styles.clearDepth);
                     m_AdditionalCameraDataSO.ApplyModifiedProperties();
                 }
 
@@ -553,15 +553,15 @@ namespace UnityEditor.Rendering.Universal
         {
             bool isPostProcessingEnabled = IsAnyRendererHasPostProcessingEnabled(rpAsset) && m_AdditionalCameraDataRenderPostProcessing.boolValue;
 
-            EditorGUILayout.PropertyField(m_AdditionalCameraDataRenderPostProcessing, URPCameraUI.renderPostProcessing);
+            EditorGUILayout.PropertyField(m_AdditionalCameraDataRenderPostProcessing, URPCameraUI.Styles.renderPostProcessing);
 
             if (isPostProcessingEnabled)
-                EditorGUILayout.HelpBox(URPCameraUI.disabledPostprocessing, MessageType.Warning);
+                EditorGUILayout.HelpBox(URPCameraUI.Styles.disabledPostprocessing, MessageType.Warning);
         }
 
         void DrawOutputSettings(UniversalRenderPipelineAsset rpAsset)
         {
-            m_OutputSettingsFoldout.value = EditorGUILayout.BeginFoldoutHeaderGroup(m_OutputSettingsFoldout.value, URPCameraUI.outputSettingsText);
+            m_OutputSettingsFoldout.value = EditorGUILayout.BeginFoldoutHeaderGroup(m_OutputSettingsFoldout.value, URPCameraUI.Styles.outputSettingsText);
             if (m_OutputSettingsFoldout.value)
             {
                 DrawTargetTexture(rpAsset);
@@ -600,7 +600,7 @@ namespace UnityEditor.Rendering.Universal
             CameraRenderType camType = (originalCamType != CameraRenderType.Base && isDeferred) ? CameraRenderType.Base : originalCamType;
 
             camType = (CameraRenderType)EditorGUILayout.EnumPopup(
-                URPCameraUI.cameraType,
+                URPCameraUI.Styles.cameraType,
                 camType,
                 e =>
                 {
@@ -630,10 +630,10 @@ namespace UnityEditor.Rendering.Universal
 
             EditorGUI.BeginChangeCheck();
             Rect controlRect = EditorGUILayout.GetControlRect(true);
-            EditorGUI.BeginProperty(controlRect, URPCameraUI.backgroundType, settings.clearFlags);
+            EditorGUI.BeginProperty(controlRect, URPCameraUI.Styles.backgroundType, settings.clearFlags);
 
-            BackgroundType selectedType = (BackgroundType)EditorGUI.IntPopup(controlRect, URPCameraUI.backgroundType, (int)backgroundType,
-                URPCameraUI.cameraBackgroundType, URPCameraUI.cameraBackgroundValues);
+            BackgroundType selectedType = (BackgroundType)EditorGUI.IntPopup(controlRect, URPCameraUI.Styles.backgroundType, (int)backgroundType,
+                URPCameraUI.Styles.cameraBackgroundType, URPCameraUI.Styles.cameraBackgroundValues);
             EditorGUI.EndProperty();
 
             if (EditorGUI.EndChangeCheck())
@@ -660,24 +660,24 @@ namespace UnityEditor.Rendering.Universal
 
         void DrawPriority()
         {
-            EditorGUILayout.PropertyField(settings.depth, URPCameraUI.priority);
+            EditorGUILayout.PropertyField(settings.depth, URPCameraUI.Styles.priority);
         }
 
         void DrawHDR()
         {
             Rect controlRect = EditorGUILayout.GetControlRect(true);
-            EditorGUI.BeginProperty(controlRect, URPCameraUI.allowHDR, settings.HDR);
+            EditorGUI.BeginProperty(controlRect, URPCameraUI.Styles.allowHDR, settings.HDR);
             int selectedValue = !settings.HDR.boolValue ? 0 : 1;
-            settings.HDR.boolValue = EditorGUI.IntPopup(controlRect, URPCameraUI.allowHDR, selectedValue, URPCameraUI.displayedCameraOptions, URPCameraUI.cameraOptions) == 1;
+            settings.HDR.boolValue = EditorGUI.IntPopup(controlRect, URPCameraUI.Styles.allowHDR, selectedValue, URPCameraUI.Styles.displayedCameraOptions, URPCameraUI.Styles.cameraOptions) == 1;
             EditorGUI.EndProperty();
         }
 
         void DrawMSAA()
         {
             Rect controlRect = EditorGUILayout.GetControlRect(true);
-            EditorGUI.BeginProperty(controlRect, URPCameraUI.allowMSAA, settings.allowMSAA);
+            EditorGUI.BeginProperty(controlRect, URPCameraUI.Styles.allowMSAA, settings.allowMSAA);
             int selectedValue = !settings.allowMSAA.boolValue ? 0 : 1;
-            settings.allowMSAA.boolValue = EditorGUI.IntPopup(controlRect, URPCameraUI.allowMSAA, selectedValue, URPCameraUI.displayedCameraOptions, URPCameraUI.cameraOptions) == 1;
+            settings.allowMSAA.boolValue = EditorGUI.IntPopup(controlRect, URPCameraUI.Styles.allowMSAA, selectedValue, URPCameraUI.Styles.displayedCameraOptions, URPCameraUI.Styles.cameraOptions) == 1;
             EditorGUI.EndProperty();
         }
 
@@ -685,9 +685,9 @@ namespace UnityEditor.Rendering.Universal
         void DrawXRRendering()
         {
             Rect controlRect = EditorGUILayout.GetControlRect(true);
-            EditorGUI.BeginProperty(controlRect, URPCameraUI.xrTargetEye, m_AdditionalCameraDataAllowXRRendering);
+            EditorGUI.BeginProperty(controlRect, URPCameraUI.Styles.xrTargetEye, m_AdditionalCameraDataAllowXRRendering);
             int selectedValue = !m_AdditionalCameraDataAllowXRRendering.boolValue ? 0 : 1;
-            m_AdditionalCameraDataAllowXRRendering.boolValue = EditorGUI.IntPopup(controlRect, URPCameraUI.xrTargetEye, selectedValue, URPCameraUI.xrTargetEyeOptions, URPCameraUI.xrTargetEyeValues) == 1;
+            m_AdditionalCameraDataAllowXRRendering.boolValue = EditorGUI.IntPopup(controlRect, URPCameraUI.Styles.xrTargetEye, selectedValue, URPCameraUI.Styles.xrTargetEyeOptions, URPCameraUI.Styles.xrTargetEyeValues) == 1;
             EditorGUI.EndProperty();
         }
 
@@ -695,7 +695,7 @@ namespace UnityEditor.Rendering.Universal
 
         void DrawTargetTexture(UniversalRenderPipelineAsset rpAsset)
         {
-            EditorGUILayout.PropertyField(settings.targetTexture, URPCameraUI.targetTextureLabel);
+            EditorGUILayout.PropertyField(settings.targetTexture, URPCameraUI.Styles.targetTextureLabel);
 
             if (!settings.targetTexture.hasMultipleDifferentValues && rpAsset != null)
             {
@@ -729,8 +729,8 @@ namespace UnityEditor.Rendering.Universal
                 selectedVolumeTrigger = (Transform)m_AdditionalCameraDataVolumeTrigger.objectReferenceValue;
             }
 
-            hasChanged |= DrawLayerMask(m_AdditionalCameraDataVolumeLayerMask, ref selectedVolumeLayerMask, URPCameraUI.volumeLayerMask);
-            hasChanged |= DrawObjectField(m_AdditionalCameraDataVolumeTrigger, ref selectedVolumeTrigger, URPCameraUI.volumeTrigger);
+            hasChanged |= DrawLayerMask(m_AdditionalCameraDataVolumeLayerMask, ref selectedVolumeLayerMask, URPCameraUI.Styles.volumeLayerMask);
+            hasChanged |= DrawObjectField(m_AdditionalCameraDataVolumeTrigger, ref selectedVolumeTrigger, URPCameraUI.Styles.volumeTrigger);
 
             if (hasChanged)
             {
@@ -746,18 +746,18 @@ namespace UnityEditor.Rendering.Universal
             EditorGUI.BeginChangeCheck();
 
             Rect controlRect = EditorGUILayout.GetControlRect(true);
-            EditorGUI.BeginProperty(controlRect, URPCameraUI.rendererType, m_AdditionalCameraDataRendererProp);
+            EditorGUI.BeginProperty(controlRect, URPCameraUI.Styles.rendererType, m_AdditionalCameraDataRendererProp);
 
             EditorGUI.showMixedValue = m_AdditionalCameraDataRendererProp.hasMultipleDifferentValues;
-            int selectedRenderer = EditorGUI.IntPopup(controlRect, URPCameraUI.rendererType, selectedRendererOption, rpAsset.rendererDisplayList, UniversalRenderPipeline.asset.rendererIndexList);
+            int selectedRenderer = EditorGUI.IntPopup(controlRect, URPCameraUI.Styles.rendererType, selectedRendererOption, rpAsset.rendererDisplayList, UniversalRenderPipeline.asset.rendererIndexList);
             EditorGUI.EndProperty();
             if (!rpAsset.ValidateRendererDataList())
             {
-                EditorGUILayout.HelpBox(URPCameraUI.noRendererError, MessageType.Error);
+                EditorGUILayout.HelpBox(URPCameraUI.Styles.noRendererError, MessageType.Error);
             }
             else if (!rpAsset.ValidateRendererData(selectedRendererOption))
             {
-                EditorGUILayout.HelpBox(URPCameraUI.missingRendererWarning, MessageType.Warning);
+                EditorGUILayout.HelpBox(URPCameraUI.Styles.missingRendererWarning, MessageType.Warning);
                 var rect = EditorGUI.IndentedRect(EditorGUILayout.GetControlRect());
                 if (GUI.Button(rect, "Select Render Pipeline Asset"))
                 {
@@ -779,11 +779,11 @@ namespace UnityEditor.Rendering.Universal
             // This way we will avoid cluttering the camera UI
             bool showPostProcessWarning = IsAnyRendererHasPostProcessingEnabled(rpAsset);
 
-            EditorGUILayout.PropertyField(m_AdditionalCameraDataRenderPostProcessing, URPCameraUI.renderPostProcessing);
+            EditorGUILayout.PropertyField(m_AdditionalCameraDataRenderPostProcessing, URPCameraUI.Styles.renderPostProcessing);
             showPostProcessWarning &= !ShowPostProcessingWarning(showPostProcessWarning && m_AdditionalCameraDataRenderPostProcessing.boolValue);
 
             // Draw Final Post-processing
-            DrawIntPopup(m_AdditionalCameraDataAntialiasing, URPCameraUI.antialiasing, URPCameraUI.antialiasingOptions, URPCameraUI.antialiasingValues);
+            DrawIntPopup(m_AdditionalCameraDataAntialiasing, URPCameraUI.Styles.antialiasing, URPCameraUI.Styles.antialiasingOptions, URPCameraUI.Styles.antialiasingValues);
 
             // If AntiAliasing has mixed value we do not draw the sub menu
             if (!m_AdditionalCameraDataAntialiasing.hasMultipleDifferentValues)
@@ -793,16 +793,16 @@ namespace UnityEditor.Rendering.Universal
                 if (selectedAntialiasing == AntialiasingMode.SubpixelMorphologicalAntiAliasing)
                 {
                     EditorGUI.indentLevel++;
-                    EditorGUILayout.PropertyField(m_AdditionalCameraDataAntialiasingQuality, URPCameraUI.antialiasingQuality);
+                    EditorGUILayout.PropertyField(m_AdditionalCameraDataAntialiasingQuality, URPCameraUI.Styles.antialiasingQuality);
                     if (CoreEditorUtils.buildTargets.Contains(GraphicsDeviceType.OpenGLES2))
                         EditorGUILayout.HelpBox("Sub-pixel Morphological Anti-Aliasing isn't supported on GLES2 platforms.", MessageType.Warning);
                     EditorGUI.indentLevel--;
                 }
                 showPostProcessWarning &= !ShowPostProcessingWarning(showPostProcessWarning && selectedAntialiasing != AntialiasingMode.None);
 
-                EditorGUILayout.PropertyField(m_AdditionalCameraDataStopNaN, URPCameraUI.stopNaN);
+                EditorGUILayout.PropertyField(m_AdditionalCameraDataStopNaN, URPCameraUI.Styles.stopNaN);
                 showPostProcessWarning &= !ShowPostProcessingWarning(showPostProcessWarning && m_AdditionalCameraDataStopNaN.boolValue);
-                EditorGUILayout.PropertyField(m_AdditionalCameraDataDithering, URPCameraUI.dithering);
+                EditorGUILayout.PropertyField(m_AdditionalCameraDataDithering, URPCameraUI.Styles.dithering);
                 ShowPostProcessingWarning(showPostProcessWarning && m_AdditionalCameraDataDithering.boolValue);
             }
         }
@@ -811,7 +811,7 @@ namespace UnityEditor.Rendering.Universal
         {
             if (!condition)
                 return false;
-            EditorGUILayout.HelpBox(URPCameraUI.disabledPostprocessing, MessageType.Warning);
+            EditorGUILayout.HelpBox(URPCameraUI.Styles.disabledPostprocessing, MessageType.Warning);
             return true;
         }
 
@@ -863,12 +863,12 @@ namespace UnityEditor.Rendering.Universal
 
         void DrawDepthTexture()
         {
-            EditorGUILayout.PropertyField(m_AdditionalCameraDataRenderDepthProp, URPCameraUI.requireDepthTexture);
+            EditorGUILayout.PropertyField(m_AdditionalCameraDataRenderDepthProp, URPCameraUI.Styles.requireDepthTexture);
         }
 
         void DrawOpaqueTexture()
         {
-            EditorGUILayout.PropertyField(m_AdditionalCameraDataRenderOpaqueProp, URPCameraUI.requireOpaqueTexture);
+            EditorGUILayout.PropertyField(m_AdditionalCameraDataRenderOpaqueProp, URPCameraUI.Styles.requireOpaqueTexture);
         }
 
         void DrawIntPopup(SerializedProperty prop, GUIContent style, GUIContent[] optionNames, int[] optionValues)
@@ -894,7 +894,7 @@ namespace UnityEditor.Rendering.Universal
 
         void DrawRenderShadows()
         {
-            EditorGUILayout.PropertyField(m_AdditionalCameraDataRenderShadowsProp, URPCameraUI.renderingShadows);
+            EditorGUILayout.PropertyField(m_AdditionalCameraDataRenderShadowsProp, URPCameraUI.Styles.renderingShadows);
         }
 
         void EndProperty()
