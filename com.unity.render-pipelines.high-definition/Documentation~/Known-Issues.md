@@ -16,12 +16,55 @@ To fix this issue, restart the Unity editor.
 
 ## Collab and Config
 
-If you use the wizard, the local package should be in `ROOT/LocalPackages/com.unity.render-pipelines.high-definition-config` and you `ROOT/Packages/manifest.json` should already target this local package.
+If you installed locally the HDRP config package and use Collaborate as your versionning software, then the local package is not included in the versioning.
 
-1. Create a folder `ROOT/Assets/Packages/com.unity.render-pipelines.high-definition-config`
-1. Copy mostly all contents from `ROOT/LocalPackages/com.unity.render-pipelines.high-definition-config` to `ROOT/Assets/Packages/com.unity.render-pipelines.high-definition-config`
-    1. Only keep `package.json` and `package.json.meta`
-1. Create a symlink from `ROOT/Assets/Packages/com.unity.render-pipelines.high-definition-config/Runtime/ShaderConfig.cs.hlsl` to `ROOT/LocalPackages/com.unity.render-pipelines.high-definition-config/Runtime/ShaderConfig.cs.hlsl`
-    1. On windows, with an administrator shell: `mklink LocalPackages\com.unity.render-pipelines.high-definition-config\Runtime\ShaderConfig.cs.hlsl Assets\Packages\com.unity.render-pipelines.high-definition-config\Runtime\ShaderConfig.cs.hlsl /H`
-    1. On unix: `ln -s Assets/Packages/com.unity.render-pipelines.high-definition-config/Runtime/ShaderConfig.cs.hlsl LocalPackages/com.unity.render-pipelines.high-definition-config/Runtime/ShaderConfig.cs.hlsl`
-1. Make sure all files in `ROOT/Assets/Packages/com.unity.render-pipelines.high-definition-config` are in collab.
+### Scripted workaround:
+We provide a script to do the workaround, it requires:
+1. Python 3.9
+1. The right to create symbolinc links on windows. (You can execute as an administrator the script or give your user the right to create symbolic links)
+
+To create and version the HDRP config package:
+1. Install the config package from the Wizard
+1. Run the utility script bundled in hdrp: `Packages/com.unity.render-pipelines.high-definition-config/Documentation~/tools/local_package_collab.py -p <PATH_TO_YOUR_UNITY_PROJECT>`
+1. In Unity, check in all modified and added files
+
+To download from Collaborate or sync from collab the project:
+1. Clone or sync from Collaborate the project
+1. Run the utility script bundled in hdrp: `Packages/com.unity.render-pipelines.high-definition-config/Documentation~/tools/local_package_collab.py -p <PATH_TO_YOUR_UNITY_PROJECT>`
+
+### Manual workaround
+We will need to move files in order to get them versionned by Collaborate.
+
+So, you will need to go from this folder structure (only important files are shown for readibility):
+* Root
+    * LocalPackages
+        * com.unity.render-pipelines.high-definition-config
+            * package.json
+            * Runtime
+                * ShaderConfig.cs
+                * ShaderConfig.cs.hlsl
+                * Unity.RenderPipelines.HighDefinition.Config.Runtime.asmdef
+            * Tests
+            * Documentation~
+    * Assets
+
+To:
+* Root
+    * LocalPackages
+        * com.unity.render-pipelines.high-definition-config
+            * package.json
+            * Runtime
+                * ShaderConfig.cs.hlsl (hard symlink to Assets/Packages/com.unity.render-pipelines.high-definition-config/ShaderConfig.cs.hlsl)
+    * Assets
+        * Packages
+            * com.unity.render-pipelines.high-definition-config
+                * Runtime
+                    * ShaderConfig.cs
+                    * ShaderConfig.cs.hlsl
+                    * Unity.RenderPipelines.HighDefinition.Config.Runtime.asmdef
+                * Tests
+
+Note: _Hidden files and folders will be ignored by Collaborate, so they won't be versionned and be lost. But only non essential files are concerned, like the mostly empty Documentation folder of the config package._
+
+Note: _On windows you can use the `mklink /H <link> <target>` command to create the symbolic link. This will require the Create Symbolic Link right for your user, you can also use an Administrator shell._
+Note: _On linux and OSX, you can use the `ln -s <target> <link>` command to create thr symbolic link._
