@@ -17,7 +17,7 @@ void PerlinWorleyNoiseEvaluator(uint3 dispatchThreadID : SV_DispatchThreadID)
     // Convert the dispatch coordinates to to the generation space [0,1]x[0,1]x[0,1]
     float3 position = float3(((float2)dispatchThreadID.xy + 0.5) / _NumLayers, ((float)_Layer + 0.5) / _NumLayers);
 
-    const float baseFrequence = 4.0;
+    const float baseFrequence = 8.0;
 
     // Generate the perlin FBM
     float perlinFBM = lerp(1.0, EvaluatePerlinFractalBrownianMotion(position, baseFrequence, 4.0), 0.5);
