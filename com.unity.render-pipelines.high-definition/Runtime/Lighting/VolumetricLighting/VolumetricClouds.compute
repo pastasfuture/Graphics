@@ -402,8 +402,11 @@ void EvaluateCloudProperties(float3 positionWS, float noiseMipOffset, float eros
     float3 densityErosionAO = SAMPLE_TEXTURE2D_LOD(_CloudLutTexture, s_linear_clamp_sampler, float2(cloudCoverageData.cloudType, properties.height), CLOUD_LUT_MIP_OFFSET);
 
     // Adjust the shape and erosion factor based on the LUT and the coverage
-    shapeFactor = lerp(0, shapeFactor * densityErosionAO.y, cloudCoverageData.coverage.x);
-    erosionFactor = lerp(0, erosionFactor * densityErosionAO.y, cloudCoverageData.coverage.x);
+    //shapeFactor = lerp(0, shapeFactor * densityErosionAO.y, cloudCoverageData.coverage.x);
+    //erosionFactor = lerp(0, erosionFactor * densityErosionAO.y, cloudCoverageData.coverage.x);
+
+    shapeFactor = shapeFactor * densityErosionAO.y;
+    erosionFactor = erosionFactor * densityErosionAO.y;
 
     // Combine with the low frequency noise, we want less shaping for large clouds
     lowFrequencyNoise = lerp(1.0, lowFrequencyNoise, shapeFactor);
@@ -427,7 +430,7 @@ void EvaluateCloudProperties(float3 positionWS, float noiseMipOffset, float eros
         float highFrequencyNoise = SAMPLE_TEXTURE3D_LOD(_Worley32RGB, s_linear_repeat_sampler, fineNoiseSamplingCoordinates, CLOUD_DETAIL_MIP_OFFSET + erosionMipOffset).x;
 
         // Compute the weight of the low frequency noise
-        highFrequencyNoise = lerp(0.0, highFrequencyNoise, erosionFactor * 0.75f * cloudCoverageData.coverage.x);
+        highFrequencyNoise = lerp(0.0, highFrequencyNoise, erosionFactor * cloudCoverageData.coverage.x);
         base_cloud = remap(base_cloud, highFrequencyNoise, 1.0, 0.0, 1.0);
     }
 

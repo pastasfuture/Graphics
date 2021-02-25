@@ -52,7 +52,7 @@ internal class WorleyfBmGenerator : MonoBehaviour
         return tex2d;
     }
 
-    /*
+    
     // This functions generates the set of textures required for the real-time volumetric cloud simulation
     [MenuItem("Generation/Generate Worley Textures")]
     static public void GenerateTextures()
@@ -64,7 +64,7 @@ internal class WorleyfBmGenerator : MonoBehaviour
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
     }
-    */
+    
     public static void SaveTextureAsPNG(Texture2D texture, string fullPath)
     {
         byte[] _bytes = texture.EncodeToPNG();
