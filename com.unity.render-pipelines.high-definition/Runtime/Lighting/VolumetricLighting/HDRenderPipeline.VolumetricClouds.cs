@@ -211,7 +211,7 @@ namespace UnityEngine.Rendering.HighDefinition
                     shapeFactor = 0.85f;
                     shapeScale = 0.4f;
                     erosionFactor = 0.8f;
-                    erosionScale = 1.0f;
+                    erosionScale = 0.8f;
                     return;
                 }
                 case VolumetricClouds.CloudPresets.Cloudy:
