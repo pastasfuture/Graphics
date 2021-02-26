@@ -960,7 +960,7 @@ namespace UnityEngine.Rendering.HighDefinition
                 return;
 
             resGroup = newResGroup;
-            m_HDInstance.UpdatePostProcessScreenSize(renderGraph, camera, viewport.x, viewport.y);
+            m_HDInstance.UpdatePostProcessScreenSize(renderGraph, camera, viewportSize.x, viewportSize.y);
         }
 
         void FinalPass(RenderGraph renderGraph, HDCamera hdCamera, TextureHandle afterPostProcessTexture, TextureHandle alphaTexture, TextureHandle finalRT, TextureHandle source, BlueNoise blueNoise, bool flipY)
