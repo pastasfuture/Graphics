@@ -177,25 +177,30 @@ namespace UnityEngine.Rendering.HighDefinition
             public Textures outputTextures = new Textures();
         }
 
-        TextureHandle GetPostprocessOutputHandle(RenderGraph renderGraph,  string name, bool dynamicResolution)
+        TextureHandle GetPostprocessOutputHandle(RenderGraph renderGraph, string name, bool dynamicResolution, GraphicsFormat colorFormat, bool useMipMap)
         {
             return renderGraph.CreateTexture(new TextureDesc(Vector2.one, dynamicResolution, true)
             {
                 name = name,
-                colorFormat = m_ColorFormat,
-                useMipMap = false,
+                colorFormat = colorFormat,
+                useMipMap = useMipMap,
                 enableRandomWrite = true
             });
         }
 
-        TextureHandle GetPostprocessOutputHandle(RenderGraph renderGraph,  string name)
+        TextureHandle GetPostprocessOutputHandle(RenderGraph renderGraph, string name, bool useMipMap = false)
         {
-            return GetPostprocessOutputHandle(renderGraph, name, resGroup == ResolutionGroup.BeforeDynamicResUpscale);
+            return GetPostprocessOutputHandle(renderGraph, name,resGroup == ResolutionGroup.BeforeDynamicResUpscale, m_ColorFormat, useMipMap);
+        }
+
+        TextureHandle GetPostprocessOutputHandle(RenderGraph renderGraph, string name, GraphicsFormat colorFormat, bool useMipMap = false)
+        {
+            return GetPostprocessOutputHandle(renderGraph, name, resGroup == ResolutionGroup.BeforeDynamicResUpscale, colorFormat, useMipMap);
         }
 
         TextureHandle GetPostprocessUpsampledOutputHandle(RenderGraph renderGraph, string name)
         {
-            return GetPostprocessOutputHandle(renderGraph, name, false);
+            return GetPostprocessOutputHandle(renderGraph, name, m_ColorFormat, false);
         }
 
         void FillBloomMipsTextureHandles(BloomData bloomData, RenderGraph renderGraph, RenderGraphBuilder builder)
@@ -530,6 +535,14 @@ namespace UnityEngine.Rendering.HighDefinition
                         passData.fullresCoC = builder.ReadWriteTexture(renderGraph.CreateTexture(new TextureDesc(Vector2.one, true, true)
                             { colorFormat = k_CoCFormat, enableRandomWrite = true, name = "Full res CoC" }));
 
+                        var debugCocTexture = passData.fullresCoC;
+                        var debugCocTextureScales = hdCamera.postProcessRTScales;
+                        if (passData.taaEnabled)
+                        {
+                            debugCocTexture = passData.nextCoC;
+                            debugCocTextureScales = hdCamera.postProcessRTScalesHistory;
+                        }
+
                         GetDoFResolutionScale(passData.parameters, out float unused, out float resolutionScale);
                         float actualNearMaxBlur = passData.parameters.nearMaxBlur * resolutionScale;
                         int passCount = Mathf.CeilToInt((actualNearMaxBlur + 2f) / 4f);
@@ -581,24 +594,31 @@ namespace UnityEngine.Rendering.HighDefinition
 
                         source = passData.destination;
 
-                        m_HDInstance.PushFullScreenDebugTexture(renderGraph, passData.fullresCoC, FullScreenDebugMode.DepthOfFieldCoc);
+                        m_HDInstance.PushFullScreenDebugTexture(renderGraph, debugCocTexture, debugCocTextureScales, FullScreenDebugMode.DepthOfFieldCoc);
                     }
                     else
                     {
-                        passData.fullresCoC = builder.ReadWriteTexture(renderGraph.CreateTexture(new TextureDesc(Vector2.one, true, true)
-                            { colorFormat = k_CoCFormat, enableRandomWrite = true, useMipMap = true, name = "Full res CoC" }));
+                        passData.fullresCoC = builder.ReadWriteTexture(GetPostprocessOutputHandle(renderGraph, "Full res CoC", k_CoCFormat, true));
 
-                        passData.pingFarRGB = builder.CreateTransientTexture(new TextureDesc(Vector2.one, true, true)
-                            { colorFormat = m_ColorFormat, useMipMap = true, enableRandomWrite = true, name = "DoF Source Pyramid" });
+                        var debugCocTexture = passData.fullresCoC;
+                        var debugCocTextureScales = hdCamera.postProcessRTScales;
+                        if (passData.taaEnabled)
+                        {
+                            debugCocTexture = passData.nextCoC;
+                            debugCocTextureScales = hdCamera.postProcessRTScalesHistory;
+                        }
+
+
+                        passData.pingFarRGB = builder.CreateTransientTexture(GetPostprocessOutputHandle(renderGraph, "DoF Source Pyramid", m_ColorFormat, true));
 
                         builder.SetRenderFunc(
                             (DepthofFieldData data, RenderGraphContext ctx) =>
                             {
-                                DoPhysicallyBasedDepthOfField(data.parameters, ctx.cmd, data.source, data.destination, data.fullresCoC, data.prevCoC, data.nextCoC, data.motionVecTexture, data.pingFarRGB, data.taaEnabled);
+                                DoPhysicallyBasedDepthOfField(data.parameters, ctx.cmd, data.source, data.depthBuffer, data.destination, data.fullresCoC, data.prevCoC, data.nextCoC, data.motionVecTexture, data.pingFarRGB, data.taaEnabled);
                             });
 
                         source = passData.destination;
-                        m_HDInstance.PushFullScreenDebugTexture(renderGraph, passData.fullresCoC, FullScreenDebugMode.DepthOfFieldCoc);
+                        m_HDInstance.PushFullScreenDebugTexture(renderGraph, debugCocTexture, debugCocTextureScales, FullScreenDebugMode.DepthOfFieldCoc);
                     }
                 }
             }
@@ -1136,7 +1156,7 @@ namespace UnityEngine.Rendering.HighDefinition
                 TextureHandle bloomTexture = BloomPass(renderGraph, hdCamera, source);
                 TextureHandle logLutOutput = ColorGradingPass(renderGraph, hdCamera);
                 source = UberPass(renderGraph, hdCamera, logLutOutput, bloomTexture, source);
-                m_HDInstance.PushFullScreenDebugTexture(renderGraph, source, FullScreenDebugMode.ColorLog);
+                m_HDInstance.PushFullScreenDebugTexture(renderGraph, source, hdCamera.postProcessRTScales, FullScreenDebugMode.ColorLog);
 
                 source = CustomPostProcessPass(renderGraph, hdCamera, source, depthBuffer, normalBuffer, HDRenderPipeline.defaultAsset.afterPostProcessCustomPostProcesses, HDProfileId.CustomPostProcessAfterPP);
 

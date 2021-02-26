@@ -81,6 +81,14 @@ namespace UnityEngine.Rendering.HighDefinition
         public Camera               camera;
         /// <summary>TAA jitter information.</summary>
         public Vector4              taaJitter;
+        /// <summary>TAA jitter information in uv space, with respect to the post process resolution target.</summary>
+        public Vector4              taaJitterPostProcessResolution
+        {  
+            get {
+                Vector2 postProcessScale = new Vector2(actualWidth, actualHeight) / new Vector2(postProcessScreenSize.x, postProcessScreenSize.y);
+                return new Vector4(taaJitter.z * postProcessScale.x, taaJitter.w * postProcessScale.y, 0.0f, 0.0f);
+            }
+        }
         /// <summary>View constants.</summary>
         public ViewConstants        mainViewConstants;
         /// <summary>Color pyramid history buffer state.</summary>
@@ -242,9 +250,12 @@ namespace UnityEngine.Rendering.HighDefinition
         internal float                  lastTime;
         internal Camera                 parentCamera = null; // Used for recursive rendering, e.g. a reflection in a scene view.
 
-        internal Vector4 m_PostProcessScreenSize = new Vector4(0.0f, 0.0f, 0.0f, 0.0f);
-        internal Vector4 m_PostProcessRTScales   = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-        internal Vector4 m_PostProcessRTScalesHistory   = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+        private Vector4 m_PostProcessScreenSize = new Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+        private Vector4 m_PostProcessRTScales   = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+        private Vector4 m_PostProcessRTScalesHistory   = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+
+        internal Vector2 postProcessRTScales { get { return new Vector2(m_PostProcessRTScales.x, m_PostProcessRTScales.y); } }
+        internal Vector2 postProcessRTScalesHistory { get { return new Vector2(m_PostProcessRTScalesHistory.x, m_PostProcessRTScalesHistory.y); } }
 
         // This property is ray tracing specific. It allows us to track for the RayTracingShadow history which light was using which slot.
         // This avoid ghosting and many other problems that may happen due to an unwanted history usage
@@ -660,19 +671,22 @@ namespace UnityEngine.Rendering.HighDefinition
         {
             RTHandles.SetReferenceSize(actualWidth, actualHeight, msaaSamples);
             m_HistoryRTSystem.SwapAndSetReferenceSize(actualWidth, actualHeight, msaaSamples);
-            m_PostProcessRTScalesHistory = m_PostProcessRTScales;
+            m_PostProcessRTScalesHistory = m_HistoryRTSystem.CalculateRatioAgainstMaxSize(actualWidth, actualHeight);
             SetPostProcessScreenSize(actualWidth, actualHeight);
         }
 
         internal void SetPostProcessScreenSize(int width, int height)
         {
+            float newScaleX = width / m_PostProcessScreenSize.x;
+            float newScaleY = height / m_PostProcessScreenSize.y;
+
             m_PostProcessScreenSize = new Vector4((float)width, (float)height, 1.0f / (float)width, 1.0f / (float)height);
-            
+
             Vector2 scales = RTHandles.CalculateRatioAgainstMaxSize(width, height);
             m_PostProcessRTScales = new Vector4(scales.x, scales.y, m_PostProcessRTScales.x, m_PostProcessRTScales.y);
-
-            Vector2 historyScales = m_HistoryRTSystem.CalculateRatioAgainstMaxSize(width, height);
-            m_PostProcessRTScalesHistory = new Vector4(historyScales.x, historyScales.y, m_PostProcessRTScalesHistory.x, m_PostProcessRTScalesHistory.y);
+            /*m_PostProcessRTScalesHistory = new Vector4(
+                m_PostProcessRTScalesHistory.x * newScaleX, m_PostProcessRTScalesHistory.y * newScaleY,
+                m_PostProcessRTScalesHistory.z * newScaleX, m_PostProcessRTScalesHistory.w * newScaleY);*/
         }
 
         // Updating RTHandle needs to be done at the beginning of rendering (not during update of HDCamera which happens in batches)
@@ -804,7 +818,6 @@ namespace UnityEngine.Rendering.HighDefinition
                 for (int j = 0; j < 4; ++j)
                     cb._FrustumPlanes[i * 4 + j] = frustumPlaneEquations[i][j];
             cb._TaaFrameInfo = new Vector4(taaSharpenStrength, 0, taaFrameIndex, taaEnabled ? 1 : 0);
-            cb._TaaJitterStrength = taaJitter;
             cb._ColorPyramidLodCount = colorPyramidHistoryMipCount;
 
             float ct = time;
