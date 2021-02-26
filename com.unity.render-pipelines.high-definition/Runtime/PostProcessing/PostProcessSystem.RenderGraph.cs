@@ -190,7 +190,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
         TextureHandle GetPostprocessOutputHandle(RenderGraph renderGraph,  string name)
         {
-            return GetPostprocessOutputHandle(renderGraph, name, resGroup == ResolutionGroup.Downsampled);
+            return GetPostprocessOutputHandle(renderGraph, name, resGroup == ResolutionGroup.BeforeDynamicResUpscale);
         }
 
         TextureHandle GetPostprocessUpsampledOutputHandle(RenderGraph renderGraph, string name)
@@ -954,7 +954,7 @@ namespace UnityEngine.Rendering.HighDefinition
             return outTextures;
         }
 
-        private void UpdateResolutionGroup(RenderGraph renderGraph, HDCamera camera, ResolutionGroup newResGroup)
+        private void SetCurrentResolutionGroup(RenderGraph renderGraph, HDCamera camera, ResolutionGroup newResGroup)
         {
             if (resGroup == newResGroup)
                 return;
@@ -1084,7 +1084,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
             //default always to downsampled resolution group.
             //when DRS is off this resolution group is the same.
-            UpdateResolutionGroup(renderGraph, hdCamera, ResolutionGroup.Downsampled);
+            SetCurrentResolutionGroup(renderGraph, hdCamera, ResolutionGroup.BeforeDynamicResUpscale);
 
             // Note: whether a pass is really executed or not is generally inside the Do* functions.
             // with few exceptions.
@@ -1101,7 +1101,7 @@ namespace UnityEngine.Rendering.HighDefinition
                     source = upsamplignSceneResults.color;
                     depthBuffer = upsamplignSceneResults.depthBuffer;
                     motionVectors = upsamplignSceneResults.motionVectors;
-                    UpdateResolutionGroup(renderGraph, hdCamera, ResolutionGroup.Full);
+                    SetCurrentResolutionGroup(renderGraph, hdCamera, ResolutionGroup.AfterDynamicResUpscale);
                 }
 
                 source = CustomPostProcessPass(renderGraph, hdCamera, source, depthBuffer, normalBuffer, HDRenderPipeline.defaultAsset.beforeTAACustomPostProcesses, HDProfileId.CustomPostProcessBeforeTAA);
@@ -1149,7 +1149,7 @@ namespace UnityEngine.Rendering.HighDefinition
             if (DynamicResolutionHandler.instance.upsamplerSchedule == DynamicResolutionHandler.UpsamplerScheduleType.AfterPost)
             {
                 source = ContrastAdaptiveSharpeningPass(renderGraph, hdCamera, source);
-                UpdateResolutionGroup(renderGraph, hdCamera, ResolutionGroup.Full);
+                SetCurrentResolutionGroup(renderGraph, hdCamera, ResolutionGroup.AfterDynamicResUpscale);
             }
 
             FinalPass(renderGraph, hdCamera, afterPostProcessTexture, alphaTexture, finalRT, source, blueNoise, flipY);

@@ -72,18 +72,18 @@ namespace UnityEngine.Rendering.HighDefinition
 
         //Viewport information
 
-        Vector2Int m_FullRes = new Vector2Int(1, 1);
-        Vector2Int m_DownsampledRes = new Vector2Int(1, 1);
+        Vector2Int m_AfterDynamicResUpscaleRes = new Vector2Int(1, 1);
+        Vector2Int m_BeforeDynamicResUpscaleRes = new Vector2Int(1, 1);
 
         private enum ResolutionGroup
         {
-            Downsampled,
-            Full
+            BeforeDynamicResUpscale,
+            AfterDynamicResUpscale
         }
 
         private ResolutionGroup resGroup { set; get; }
 
-        private Vector2Int viewport { get { return resGroup == ResolutionGroup.Full ? m_FullRes : m_DownsampledRes; } }
+        private Vector2Int viewport { get { return resGroup == ResolutionGroup.AfterDynamicResUpscale ? m_AfterDynamicResUpscaleRes : m_BeforeDynamicResUpscaleRes; } }
 
         // Prefetched components (updated on every frame)
         Exposure m_Exposure;
@@ -218,7 +218,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
             SetExposureTextureToEmpty(m_EmptyExposureTexture);
 
-            resGroup = ResolutionGroup.Downsampled;
+            resGroup = ResolutionGroup.BeforeDynamicResUpscale;
         }
 
         public void Cleanup()
@@ -263,8 +263,8 @@ namespace UnityEngine.Rendering.HighDefinition
             m_HDInstance = hdInstance;
             m_PostProcessEnabled = camera.frameSettings.IsEnabled(FrameSettingsField.Postprocess) && CoreUtils.ArePostProcessesEnabled(camera.camera);
             m_AnimatedMaterialsEnabled = camera.animateMaterials;
-            m_FullRes = new Vector2Int((int)Mathf.Round(camera.finalViewport.width), (int)Mathf.Round(camera.finalViewport.height));
-            m_DownsampledRes = new Vector2Int(camera.actualWidth, camera.actualHeight);
+            m_AfterDynamicResUpscaleRes = new Vector2Int((int)Mathf.Round(camera.finalViewport.width), (int)Mathf.Round(camera.finalViewport.height));
+            m_BeforeDynamicResUpscaleRes = new Vector2Int(camera.actualWidth, camera.actualHeight);
 
             // Grab physical camera settings or a default instance if it's null (should only happen
             // in rare occasions due to how HDAdditionalCameraData is added to the camera)
